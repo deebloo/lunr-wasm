@@ -16,7 +16,7 @@ pub struct Lunr {
 
 impl Lunr {
     pub fn add_document(&mut self) {
-        self.index.docs.push(String::from("Hello World"))
+        self.index.add_document();
     }
 
     pub fn search() {}
