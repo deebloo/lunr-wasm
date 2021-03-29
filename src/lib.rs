@@ -15,9 +15,13 @@ pub struct Lunr {
 }
 
 impl Lunr {
+    pub fn new() -> Lunr {
+        Lunr {
+            index: Index::new(),
+        }
+    }
+
     pub fn add_document(&mut self) {
         self.index.add_document();
     }
-
-    pub fn search() {}
 }

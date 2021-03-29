@@ -6,5 +6,12 @@ pub struct Index {
 }
 
 impl Index {
+    pub fn new() -> Index {
+        Index {
+            fields: vec![],
+            field_vectors: vec![],
+        }
+    }
+
     pub fn add_document(&mut self) {}
 }
