@@ -1,17 +1,66 @@
-type FieldVector = (String, Vec<f32>);
+use std::collections::HashMap;
 
 pub struct Index {
-    pub fields: Vec<String>,
-    pub field_vectors: Vec<FieldVector>,
+    pub documents: Vec<String>,
+    pub inverted_index: HashMap<String, Vec<usize>>,
 }
 
 impl Index {
     pub fn new() -> Index {
         Index {
-            fields: vec![],
-            field_vectors: vec![],
+            documents: vec![],
+            inverted_index: HashMap::new(),
         }
     }
 
-    pub fn add_document(&mut self) {}
+    pub fn add_document(&mut self, document: String) {
+        // keep track of standard document
+        self.documents.push(document.clone());
+
+        let document_index = self.documents.len() - 1;
+
+        // split document into words and popular inverted index
+        for word in document.split(' ') {
+            let normalized_word = word.to_lowercase();
+
+            self.inverted_index
+                .entry(normalized_word)
+                .or_insert(vec![])
+                .push(document_index)
+        }
+    }
+
+    pub fn search(&self, query: String) -> Vec<String> {
+        let mut results: Vec<String> = vec![];
+
+        if let Some(entry) = self.inverted_index.get(&query) {
+            for i in entry {
+                let document = self.documents[*i].clone();
+
+                results.push(document)
+            }
+        }
+
+        results
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_index_document() {
+        let mut index = Index::new();
+
+        index.add_document("Hello World".to_string());
+
+        assert_eq!(index.documents, vec!["Hello World"]);
+
+        let mut expected_inverted: HashMap<String, Vec<usize>> = HashMap::new();
+        expected_inverted.insert("hello".to_string(), vec![0 as usize]);
+        expected_inverted.insert("world".to_string(), vec![0 as usize]);
+
+        assert_eq!(index.inverted_index, expected_inverted);
+    }
 }

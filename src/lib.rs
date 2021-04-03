@@ -21,7 +21,11 @@ impl Lunr {
         }
     }
 
-    pub fn add_document(&mut self) {
-        self.index.add_document();
+    pub fn add_document(&mut self, document: String) {
+        self.index.add_document(document);
+    }
+
+    pub fn search(&self, query: String) -> Vec<String> {
+        self.index.search(query)
     }
 }
