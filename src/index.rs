@@ -108,7 +108,7 @@ mod tests {
         index.add_document("Goodbye World".to_string());
         index.add_document("Foo Bar".to_string());
 
-        let res = index.search("world".to_string());
+        let res = index.search("World".to_string());
 
         assert_eq!(res, vec!["Hello World", "Goodbye World"]);
     }
