@@ -32,20 +32,6 @@ impl Index {
         self.index_document(document, document_index);
     }
 
-    pub fn search(&self, query: String) -> Vec<String> {
-        let mut results: Vec<String> = vec![];
-
-        if let Some(entry) = self.inverted_index.get(&query) {
-            for i in entry {
-                let document = self.documents[*i].clone();
-
-                results.push(document)
-            }
-        }
-
-        results
-    }
-
     // split document into words and popular inverted index
     fn index_document(&mut self, document: String, document_index: usize) {
         for word in document.split_whitespace() {
@@ -60,6 +46,20 @@ impl Index {
                     .push(document_index);
             }
         }
+    }
+
+    pub fn search(&self, query: String) -> Vec<String> {
+        let mut results: Vec<String> = vec![];
+
+        if let Some(entry) = self.inverted_index.get(&query.to_lowercase()) {
+            for i in entry {
+                let document = self.documents[*i].clone();
+
+                results.push(document)
+            }
+        }
+
+        results
     }
 }
 
