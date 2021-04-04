@@ -1,10 +1,5 @@
 use std::collections::HashMap;
 
-pub struct Index {
-    pub documents: Vec<String>,
-    pub inverted_index: HashMap<String, Vec<usize>>,
-}
-
 // list of puncuations
 const PUNCUATION: &[char] = &[
     '.', '?', '!', ';', ':', ',', '(', ')', '[', ']', '{', '}', '"', '-',
@@ -14,6 +9,11 @@ const PUNCUATION: &[char] = &[
 const STOP_WORDS: [&str; 10] = [
     "the", "be", "to", "of", "and", "a", "in", "that", "have", "i",
 ];
+
+pub struct Index {
+    pub documents: Vec<String>,
+    pub inverted_index: HashMap<String, Vec<usize>>,
+}
 
 impl Index {
     pub fn new() -> Index {
