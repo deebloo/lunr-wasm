@@ -14,6 +14,7 @@ pub struct Lunr {
     index: Index,
 }
 
+#[wasm_bindgen]
 impl Lunr {
     pub fn new() -> Lunr {
         Lunr {
@@ -21,11 +22,11 @@ impl Lunr {
         }
     }
 
-    pub fn add_document(&mut self, document_id: String, document: String) {
+    pub fn add_document(&mut self, document_id: &str, document: &str) {
         self.index.add_document(document_id, document);
     }
 
-    pub fn search(&self, query: String) -> Vec<String> {
-        self.index.search(query)
+    pub fn search(&self, query: &str) {
+        self.index.search(query);
     }
 }
