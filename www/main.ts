@@ -1,3 +1,4 @@
+
 import init, { Lunr } from './pkg/lunr_wasm';
 
 export async function main() {

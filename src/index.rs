@@ -10,42 +10,42 @@ const STOP_WORDS: [&str; 10] = [
     "the", "be", "to", "of", "and", "a", "in", "that", "have", "i",
 ];
 
-type DocumentStore = HashMap<String, String>;
-type InvertedIndex = HashMap<String, Vec<String>>;
+pub type InvertedIndex = HashMap<String, Vec<String>>;
 
 pub struct Index {
-    pub documents: DocumentStore,
     pub inverted_index: InvertedIndex,
 }
 
 impl Index {
     pub fn new() -> Index {
         Index {
-            documents: HashMap::new(),
             inverted_index: HashMap::new(),
         }
     }
 
     pub fn add_document(&mut self, document_id: &str, document: &str) {
-        // keep track of standard document
-        self.documents
-            .insert(document_id.to_string(), document.to_string());
-
         // Index document for search
         self.index_document(document_id.to_string(), document.to_string());
     }
 
     // split document into words and popular inverted index
     fn index_document(&mut self, document_id: String, document: String) {
+        let mut parsed_document: Vec<&str> = document.split_whitespace().collect();
+
+        parsed_document.dedup();
+
         for word in document.split_whitespace() {
             let normalized_word = word.to_lowercase();
             let trimmed_word = normalized_word.trim_matches(PUNCUATION);
 
             if !STOP_WORDS.contains(&trimmed_word) {
-                self.inverted_index
+                let entry = self
+                    .inverted_index
                     .entry(trimmed_word.to_string())
-                    .or_insert(vec![])
-                    .push(document_id.clone());
+                    .or_insert(vec![]);
+
+                entry.push(document_id.clone());
+                entry.dedup();
             }
         }
     }
@@ -58,15 +58,27 @@ impl Index {
 
         for query_part in parsed_query {
             if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
-                for i in entry {
-                    let document = self.documents.get(i).unwrap();
+                println!("{:?}", entry);
 
-                    results.push(document.clone())
+                for i in entry {
+                    results.push(i.clone());
                 }
             }
         }
 
         results
+    }
+
+    pub fn import(&mut self, encoded_index: Vec<u8>) {
+        let decoded: InvertedIndex = bincode::deserialize(&encoded_index).unwrap();
+
+        self.inverted_index = decoded
+    }
+
+    pub fn export(&self) -> Vec<u8> {
+        let encoded: Vec<u8> = bincode::serialize(&self.inverted_index).unwrap();
+
+        encoded
     }
 }
 
@@ -79,11 +91,6 @@ mod tests {
         let mut index = Index::new();
 
         index.add_document("0", "Hello World!?.");
-
-        let mut expected_documents: HashMap<String, String> = HashMap::new();
-        expected_documents.insert("0".to_string(), "Hello World!?.".to_string());
-
-        assert_eq!(index.documents, expected_documents);
 
         let mut expected_inverted: HashMap<String, Vec<String>> = HashMap::new();
         expected_inverted.insert("hello".to_string(), vec!["0".to_string()]);
@@ -98,14 +105,6 @@ mod tests {
 
         // "the", "be", "to", "of", "and", "a", "in", "that", "have", "i"
         index.add_document("0", STOP_WORDS.join(" ").as_str());
-
-        let mut expected_documents: HashMap<String, String> = HashMap::new();
-        expected_documents.insert(
-            "0".to_string(),
-            "the be to of and a in that have i".to_string(),
-        );
-
-        assert_eq!(index.documents, expected_documents);
 
         let expected_inverted: HashMap<String, Vec<String>> = HashMap::new();
 

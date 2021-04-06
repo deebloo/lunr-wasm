@@ -29,4 +29,12 @@ impl Lunr {
     pub fn search(&self, query: &str) -> String {
         self.index.search(query).join(",")
     }
+
+    pub fn import(&mut self, index: Vec<u8>) {
+        self.index.import(index);
+    }
+
+    pub fn export(&self) -> Vec<u8> {
+        self.index.export()
+    }
 }
