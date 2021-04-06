@@ -30,11 +30,9 @@ impl Index {
 
     // split document into words and popular inverted index
     fn index_document(&mut self, document_id: String, document: String) {
-        let mut parsed_document: Vec<&str> = document.split_whitespace().collect();
+        let parsed_document = document.split_whitespace();
 
-        parsed_document.dedup();
-
-        for word in document.split_whitespace() {
+        for word in parsed_document {
             let normalized_word = word.to_lowercase();
             let trimmed_word = normalized_word.trim_matches(PUNCUATION);
 
