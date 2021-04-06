@@ -58,8 +58,6 @@ impl Index {
 
         for query_part in parsed_query {
             if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
-                println!("{:?}", entry);
-
                 for i in entry {
                     results.push(i.clone());
                 }
