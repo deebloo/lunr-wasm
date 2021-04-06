@@ -120,6 +120,6 @@ mod tests {
 
         let res = index.search("World");
 
-        assert_eq!(res, vec!["Hello World", "Goodbye World"]);
+        assert_eq!(res, vec!["0", "1"]);
     }
 }
