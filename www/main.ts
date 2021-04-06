@@ -3,15 +3,13 @@ import init, { Lunr } from "./pkg/lunr_wasm";
 export async function main() {
   await init();
 
-  const prebuild_index_data: number[] = await fetch(
-    "./search_index.json"
-  ).then((res) => res.json());
-
-  let built_index = new Uint8Array(prebuild_index_data);
+  const prebuilt_index: Uint8Array = await fetch("./search_index.json")
+    .then((res) => res.json())
+    .then((res) => new Uint8Array(res));
 
   const index = Lunr.new();
 
-  index.load_index(built_index);
+  index.load_index(prebuilt_index);
 
   // index.add_document("0", "Cyclone Seroja (pictured) makes landfall in Indonesia and East Timor, killing at least 113 people and displacing thousands of others.");
   // index.add_document("1", "The Statute of Anne, the first legislation in Great Britain providing for copyright regulated by the government and courts, received royal assent and went into effect five days later.");
