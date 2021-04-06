@@ -30,11 +30,11 @@ impl Lunr {
         self.index.search(query).join(",")
     }
 
-    pub fn import(&mut self, index: Vec<u8>) {
-        self.index.import(index);
+    pub fn load_index(&mut self, index: Vec<u8>) {
+        self.index.load_index(index);
     }
 
-    pub fn export(&self) -> Vec<u8> {
-        self.index.export()
+    pub fn export_index(&self) -> Vec<u8> {
+        self.index.export_index()
     }
 }

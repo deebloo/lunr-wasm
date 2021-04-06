@@ -28,6 +28,35 @@ impl Index {
         self.index_document(document_id.to_string(), document.to_string());
     }
 
+    pub fn search(&self, query: &str) -> Vec<String> {
+        let normalized_query = query.to_lowercase();
+        let parsed_query = normalized_query.split_whitespace();
+
+        let mut results: Vec<String> = vec![];
+
+        for query_part in parsed_query {
+            if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
+                for i in entry {
+                    results.push(i.clone());
+                }
+            }
+        }
+
+        results
+    }
+
+    pub fn load_index(&mut self, encoded_index: Vec<u8>) {
+        let decoded: InvertedIndex = bincode::deserialize(&encoded_index).unwrap();
+
+        self.inverted_index = decoded
+    }
+
+    pub fn export_index(&self) -> Vec<u8> {
+        let encoded: Vec<u8> = bincode::serialize(&self.inverted_index).unwrap();
+
+        encoded
+    }
+
     // split document into words and popular inverted index
     fn index_document(&mut self, document_id: String, document: String) {
         let parsed_document = document.split_whitespace();
@@ -46,35 +75,6 @@ impl Index {
                 entry.dedup();
             }
         }
-    }
-
-    pub fn search(&self, query: &str) -> Vec<String> {
-        let normalized_query = query.to_lowercase();
-        let parsed_query = normalized_query.split_whitespace();
-
-        let mut results: Vec<String> = vec![];
-
-        for query_part in parsed_query {
-            if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
-                for i in entry {
-                    results.push(i.clone());
-                }
-            }
-        }
-
-        results
-    }
-
-    pub fn import(&mut self, encoded_index: Vec<u8>) {
-        let decoded: InvertedIndex = bincode::deserialize(&encoded_index).unwrap();
-
-        self.inverted_index = decoded
-    }
-
-    pub fn export(&self) -> Vec<u8> {
-        let encoded: Vec<u8> = bincode::serialize(&self.inverted_index).unwrap();
-
-        encoded
     }
 }
 
