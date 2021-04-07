@@ -23,6 +23,14 @@ impl Index {
         }
     }
 
+    pub fn load_index(&mut self, encoded_index: Vec<u8>) {
+        self.inverted_index = bincode::deserialize(&encoded_index).unwrap();
+    }
+
+    pub fn export_index(&self) -> Vec<u8> {
+        bincode::serialize(&self.inverted_index).unwrap()
+    }
+
     pub fn add_document(&mut self, document_id: &str, document: &str) {
         // Index document for search
         self.index_document(document_id.to_string(), document.to_string());
@@ -43,18 +51,6 @@ impl Index {
         }
 
         results
-    }
-
-    pub fn load_index(&mut self, encoded_index: Vec<u8>) {
-        let decoded: InvertedIndex = bincode::deserialize(&encoded_index).unwrap();
-
-        self.inverted_index = decoded
-    }
-
-    pub fn export_index(&self) -> Vec<u8> {
-        let encoded: Vec<u8> = bincode::serialize(&self.inverted_index).unwrap();
-
-        encoded
     }
 
     // split document into words and popular inverted index

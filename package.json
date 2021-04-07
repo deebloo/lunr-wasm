@@ -4,7 +4,7 @@
   "description": "This project is an experiment to port the lunr search engine over to rust and run it in the browser and in node as web assembly.",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm run build:wasm",
+    "preinstall": "npm run build:wasm && cargo run",
     "start": "snowpack dev",
     "build": "npm run build:wasm && snowpack build",
     "test": "echo \"Error: no test specified\" && exit 1",

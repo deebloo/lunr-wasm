@@ -1,20 +1,16 @@
 mod index;
 
 use index::Index;
+use std::fs;
 
 fn main() {
-    // let mut current_index: InvertedIndex = HashMap::new();
-    // current_index.insert("0".to_string(), vec![]);
-
     let mut index = Index::new();
 
-    index.load_index(vec![]);
+    index.add_document("0", "Cyclone Seroja (pictured) makes landfall in Indonesia and East Timor, killing at least 113 people and displacing thousands of others.");
+    index.add_document("1", "The Statute of Anne, the first legislation in Great Britain providing for copyright regulated by the government and courts, received royal assent and went into effect five days later.");
+    index.add_document("2", "Eunice Pinney (1770–1849) was an American folk artist active in the towns of Windsor and Simsbury, Connecticut. According to art historian Jean Lipman, a specialist in American folk painting, Pinney and her contemporary Mary Ann Willson are considered two of the earliest American painters to work in the medium of watercolor.");
 
-    index.add_document("0", "Christ lag in Todes Banden (Christ lay in death's bonds), BWV 4, is a chorale cantata for Easter by Johann Sebastian Bach, one of his earliest church cantatas. It is agreed to be an early work, partly for stylistic reasons and partly because there is evidence that it was probably written for a performance in 1707. Text and music are based on Luther's hymn of the same name, derived from medieval models. In each of seven vocal movements, Bach used the unchanged words of a stanza of the chorale and its tune as a cantus firmus. Although all movements are in E minor, Bach intensified the meaning of the text through a variety of musical forms and techniques. He performed the cantata again as Thomaskantor in Leipzig, beginning in 1724 for his first Easter there. Only this second version survived, scored for four vocal parts (soprano part pictured) and a Baroque instrumental ensemble with strings and a choir of cornetto and three trombones. John Eliot Gardiner described the cantata as Bach's \"first-known attempt at painting narrative in music\" and \"a bold, innovative piece of musical drama\". ");
+    let index_data = index.export_index();
 
-    index.export_index();
-
-    let res = index.search("Christ");
-
-    println!("{:#?}", res);
+    fs::write("www/search_index.bin", index_data).unwrap();
 }
