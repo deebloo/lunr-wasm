@@ -1,4 +1,5 @@
 mod index;
+mod query;
 
 use index::Index;
 use std::fs;

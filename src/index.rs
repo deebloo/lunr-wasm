@@ -1,3 +1,5 @@
+use crate::query::Query;
+
 use std::collections::HashMap;
 
 // list of puncuations
@@ -39,17 +41,14 @@ impl Index {
 
     #[allow(dead_code)]
     pub fn search(&self, query: &str) -> Vec<String> {
-        let normalized_query = query.to_lowercase();
-        let parsed_query = normalized_query.split_whitespace();
-
+        let parsed_query = Query::from_str(query);
         let mut results: HashMap<String, usize> = HashMap::new();
-
         let mut query_count = 0;
 
-        for query_part in parsed_query {
+        for query_part in parsed_query.terms {
             query_count += 1;
 
-            if let Some(entry) = self.inverted_index.get(query_part.clone()) {
+            if let Some(entry) = self.inverted_index.get(&query_part) {
                 for i in entry {
                     let res = results.entry(i.clone()).or_insert(0);
 
