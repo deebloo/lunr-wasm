@@ -23,6 +23,7 @@ impl Index {
         }
     }
 
+    #[allow(dead_code)]
     pub fn load_index(&mut self, encoded_index: Vec<u8>) {
         self.inverted_index = bincode::deserialize(&encoded_index).unwrap();
     }
@@ -36,21 +37,32 @@ impl Index {
         self.index_document(document_id.to_string(), document.to_string());
     }
 
+    #[allow(dead_code)]
     pub fn search(&self, query: &str) -> Vec<String> {
         let normalized_query = query.to_lowercase();
         let parsed_query = normalized_query.split_whitespace();
 
-        let mut results: Vec<String> = vec![];
+        let mut results: HashMap<String, usize> = HashMap::new();
+
+        let mut query_count = 0;
 
         for query_part in parsed_query {
-            if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
+            query_count += 1;
+
+            if let Some(entry) = self.inverted_index.get(query_part.clone()) {
                 for i in entry {
-                    results.push(i.clone());
+                    let res = results.entry(i.clone()).or_insert(0);
+
+                    *res += 1;
                 }
             }
         }
 
         results
+            .iter()
+            .filter(|&(_, count)| *count == query_count)
+            .map(|(id, _)| id.clone())
+            .collect()
     }
 
     // split document into words and popular inverted index
@@ -110,8 +122,30 @@ mod tests {
         index.add_document("1", "Goodbye World");
         index.add_document("2", "Foo Bar");
 
-        let res = index.search("World");
+        let mut res = index.search("World");
+
+        res.sort();
 
         assert_eq!(res, vec!["0", "1"]);
+    }
+
+    #[test]
+    fn should_treat_as_and_query() {
+        let mut index = Index::new();
+        index.add_document("0", "Hello World Foo Bar");
+        index.add_document("1", "Goodbye World");
+        index.add_document("2", "Foo Bar");
+
+        let mut res = index.search("Hello World");
+
+        res.sort();
+
+        assert_eq!(res, vec!["0"]);
+
+        let mut res = index.search("Foo Bar");
+
+        res.sort();
+
+        assert_eq!(res, vec!["0", "2"]);
     }
 }
