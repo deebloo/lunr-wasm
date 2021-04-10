@@ -42,6 +42,7 @@ impl Index {
     #[allow(dead_code)]
     pub fn search(&self, query: &str) -> Vec<String> {
         let parsed_query = Query::from_str(query);
+
         let mut results: HashMap<String, usize> = HashMap::new();
         let mut query_count = 0;
 
@@ -58,9 +59,16 @@ impl Index {
         }
 
         results
-            .iter()
-            .filter(|&(_, count)| *count == query_count)
-            .map(|(id, _)| id.clone())
+            .into_iter()
+            .filter_map(
+                |(id, count)| {
+                    if count == query_count {
+                        Some(id)
+                    } else {
+                        None
+                    }
+                },
+            )
             .collect()
     }
 
