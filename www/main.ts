@@ -11,7 +11,7 @@ export async function main() {
 
   index.load_index(prebuilt_index);
 
-  const res = index.search("Pinney statute");
+  const res = index.search("Cyclone Pinney");
 
   console.log(res);
 }
