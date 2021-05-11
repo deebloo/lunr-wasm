@@ -1,3 +1,4 @@
+use crate::query::Query;
 use std::clone::Clone;
 use std::collections::HashMap;
 
@@ -42,13 +43,9 @@ impl Index {
     pub fn search(&self, query: &str) -> Vec<String> {
         let parsed_query = Query::from_str(query);
 
-        let mut results: HashMap<String, usize> = HashMap::new();
-        let mut query_count = 0;
+        let mut results: Vec<String> = vec![];
 
         for query_part in parsed_query.terms {
-            query_count += 1;
-
-        for query_part in parsed_query {
             if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
                 if results.len() == 0 {
                     results = entry.clone();
@@ -59,17 +56,6 @@ impl Index {
         }
 
         results
-            .into_iter()
-            .filter_map(
-                |(id, count)| {
-                    if count == query_count {
-                        Some(id)
-                    } else {
-                        None
-                    }
-                },
-            )
-            .collect()
     }
 
     // split document into words and popular inverted index
