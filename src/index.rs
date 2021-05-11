@@ -1,5 +1,4 @@
-use crate::query::Query;
-
+use std::clone::Clone;
 use std::collections::HashMap;
 
 // list of puncuations
@@ -17,7 +16,7 @@ pub type InvertedIndex = HashMap<String, Vec<String>>;
 pub struct Index {
     pub inverted_index: InvertedIndex,
 }
-
+#[allow(dead_code)]
 impl Index {
     pub fn new() -> Index {
         Index {
@@ -49,11 +48,12 @@ impl Index {
         for query_part in parsed_query.terms {
             query_count += 1;
 
-            if let Some(entry) = self.inverted_index.get(&query_part) {
-                for i in entry {
-                    let res = results.entry(i.clone()).or_insert(0);
-
-                    *res += 1;
+        for query_part in parsed_query {
+            if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
+                if results.len() == 0 {
+                    results = entry.clone();
+                } else {
+                    results = intersection(&entry, &results);
                 }
             }
         }
@@ -93,6 +93,20 @@ impl Index {
     }
 }
 
+fn intersection(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
+    let mut results: Vec<String> = vec![];
+    let larger_list = if a.len() > b.len() { a } else { b };
+    let smaller_list = if a.len() < b.len() { a } else { b };
+
+    for id in larger_list {
+        if smaller_list.contains(&id) {
+            results.push(id.clone());
+        }
+    }
+
+    results
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -114,7 +128,6 @@ mod tests {
     fn should_ignore_common_words() {
         let mut index = Index::new();
 
-        // "the", "be", "to", "of", "and", "a", "in", "that", "have", "i"
         index.add_document("0", STOP_WORDS.join(" ").as_str());
 
         let expected_inverted: HashMap<String, Vec<String>> = HashMap::new();

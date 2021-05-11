@@ -27,8 +27,8 @@ impl Lunr {
         self.index.add_document(document_id, document);
     }
 
-    pub fn search(&self, query: &str) -> String {
-        self.index.search(query).join(",")
+    pub fn search(&self, query: &str) {
+        self.index.search(query);
     }
 
     pub fn load_index(&mut self, index: Vec<u8>) {
