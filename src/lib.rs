@@ -1,5 +1,6 @@
 mod index;
 mod query;
+mod util;
 
 use index::Index;
 use wasm_bindgen::prelude::*;

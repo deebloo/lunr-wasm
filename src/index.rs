@@ -1,4 +1,5 @@
 use crate::query::Query;
+use crate::util::intersection;
 use std::clone::Clone;
 use std::collections::HashMap;
 
@@ -25,7 +26,6 @@ impl Index {
         }
     }
 
-    #[allow(dead_code)]
     pub fn load_index(&mut self, encoded_index: Vec<u8>) {
         self.inverted_index = bincode::deserialize(&encoded_index).unwrap();
     }
@@ -35,18 +35,16 @@ impl Index {
     }
 
     pub fn add_document(&mut self, document_id: &str, document: &str) {
-        // Index document for search
         self.index_document(document_id.to_string(), document.to_string());
     }
 
-    #[allow(dead_code)]
     pub fn search(&self, query: &str) -> Vec<String> {
         let parsed_query = Query::from_str(query);
 
         let mut results: Vec<String> = vec![];
 
-        for query_part in parsed_query.terms {
-            if let Some(entry) = self.inverted_index.get(&query_part.to_string()) {
+        for term in parsed_query.terms {
+            if let Some(entry) = self.inverted_index.get(&term.to_string()) {
                 if results.len() == 0 {
                     results = entry.clone();
                 } else {
@@ -58,7 +56,6 @@ impl Index {
         results
     }
 
-    // split document into words and popular inverted index
     fn index_document(&mut self, document_id: String, document: String) {
         let parsed_document = document.split_whitespace();
 
@@ -77,20 +74,6 @@ impl Index {
             }
         }
     }
-}
-
-fn intersection(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
-    let mut results: Vec<String> = vec![];
-    let larger_list = if a.len() > b.len() { a } else { b };
-    let smaller_list = if a.len() < b.len() { a } else { b };
-
-    for id in larger_list {
-        if smaller_list.contains(&id) {
-            results.push(id.clone());
-        }
-    }
-
-    results
 }
 
 #[cfg(test)]
