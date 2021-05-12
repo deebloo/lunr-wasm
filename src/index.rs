@@ -18,11 +18,12 @@ pub type InvertedIndex = HashMap<String, Vec<String>>;
 pub struct Index {
     pub inverted_index: InvertedIndex,
 }
+
 #[allow(dead_code)]
 impl Index {
     pub fn new() -> Index {
         Index {
-            inverted_index: HashMap::new(),
+            inverted_index: InvertedIndex::new(),
         }
     }
 
@@ -86,7 +87,7 @@ mod tests {
 
         index.add_document("0", "Hello World!?.");
 
-        let mut expected_inverted: HashMap<String, Vec<String>> = HashMap::new();
+        let mut expected_inverted = InvertedIndex::new();
         expected_inverted.insert("hello".to_string(), vec!["0".to_string()]);
         expected_inverted.insert("world".to_string(), vec!["0".to_string()]);
 
@@ -99,7 +100,7 @@ mod tests {
 
         index.add_document("0", STOP_WORDS.join(" ").as_str());
 
-        let expected_inverted: HashMap<String, Vec<String>> = HashMap::new();
+        let expected_inverted = InvertedIndex::new();
 
         assert_eq!(index.inverted_index, expected_inverted);
     }
