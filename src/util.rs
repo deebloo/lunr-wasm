@@ -1,4 +1,13 @@
-pub fn intersection(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
+// list of puncuations
+const PUNCUATION: &[char] = &[
+    '.', '?', '!', ';', ':', ',', '(', ')', '[', ']', '{', '}', '"', '-',
+];
+
+pub fn trimmer(word: String) -> String {
+    word.trim_matches(PUNCUATION).to_string()
+}
+
+pub fn find_intersection(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
     let mut results: Vec<String> = vec![];
     let mut larger_list = a;
     let mut smaller_list = b;
@@ -23,7 +32,7 @@ mod tests {
 
     #[test]
     fn should_find_differences() {
-        let res = intersection(
+        let res = find_intersection(
             &vec![
                 "0".to_string(),
                 "1".to_string(),

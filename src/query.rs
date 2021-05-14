@@ -1,3 +1,5 @@
+use crate::util::trimmer;
+
 pub struct Query {
     pub terms: Vec<String>,
 }
@@ -13,7 +15,7 @@ impl Query {
         let parsed_query = normalized_query.split_whitespace();
 
         Query {
-            terms: parsed_query.map(|t| t.to_string()).collect(),
+            terms: parsed_query.map(|t| trimmer(t.to_string())).collect(),
         }
     }
 }

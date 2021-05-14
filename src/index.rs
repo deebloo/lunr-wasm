@@ -1,12 +1,7 @@
 use crate::query::Query;
-use crate::util::intersection;
+use crate::util;
 use std::clone::Clone;
 use std::collections::HashMap;
-
-// list of puncuations
-const PUNCUATION: &[char] = &[
-    '.', '?', '!', ';', ':', ',', '(', ')', '[', ']', '{', '}', '"', '-',
-];
 
 // TOP 10 most common words
 const STOP_WORDS: [&str; 10] = [
@@ -49,7 +44,7 @@ impl Index {
                 if results.len() == 0 {
                     results = entry.clone();
                 } else {
-                    results = intersection(&entry, &results);
+                    results = util::find_intersection(&entry, &results);
                 }
             }
         }
@@ -62,13 +57,10 @@ impl Index {
 
         for word in parsed_document {
             let normalized_word = word.to_lowercase();
-            let trimmed_word = normalized_word.trim_matches(PUNCUATION);
+            let trimmed_word = util::trimmer(normalized_word);
 
-            if !STOP_WORDS.contains(&trimmed_word) {
-                let entry = self
-                    .inverted_index
-                    .entry(trimmed_word.to_string())
-                    .or_insert(vec![]);
+            if !STOP_WORDS.contains(&trimmed_word.as_str()) {
+                let entry = self.inverted_index.entry(trimmed_word).or_insert(vec![]);
 
                 entry.push(document_id.clone());
                 entry.dedup();
